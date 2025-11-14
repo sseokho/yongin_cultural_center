@@ -1,18 +1,47 @@
 // 두 개의 fetch 요청 완료 여부를 추적할 플래그 선언
 let isHeaderLoaded = false;
 let isFooterLoaded = false;
-// header fetch
-fetch("../../include/header.html")
-    .then(response => response.text())
+
+
+
+
+function getIncludePath(fileName = 'header.html') {
+    // URL에 'yongin_archive'가 포함되어 있으면 "서버"
+    const isLocal = !window.location.href.includes('yongin_archive');
+
+    // 로컬이면 루트 '/', 서버면 '/yongin_archive/'
+    const projectRoot = isLocal ? '/' : '/yongin_archive/';
+
+    return projectRoot + 'include/' + fileName;
+}
+
+// header 불러오기
+fetch(getIncludePath('header.html'))
+    .then(res => {
+        if (!res.ok) throw new Error('Header file not found');
+        return res.text();
+    })
     .then(data => {
-        document.querySelector(".header").innerHTML = data;
-        isHeaderLoaded = true; // header 로드 완료 표시
+        document.querySelector('.header').innerHTML = data;
+        isHeaderLoaded = true;
         initHeader();
         sideMenu();
-    });
+
+
+
+
+    })
+    .catch(err => console.error(err));
+
+
+
+
+
+
+
+
 // 헤더 관련
 function initHeader() {
-
     const header = document.querySelector('.header');
     const depth1Items = document.querySelectorAll('.depth_1 > li');
     const naviBg = document.querySelector('.navi-bg');
@@ -111,14 +140,21 @@ function initHeader() {
     });
 
 
-
+    var ele = $(".sub_header img,.sub_footer img")
+    var link = $(".sub_header a,.sub_footer a")
+    ele.each((i, v) => {
+        $(v).attr("src", $(v).attr("src").replace("././", "../../"));
+    })
+    link.each((i, v) => {
+        $(v).attr("href", $(v).attr("href").replace("././", "../../"));
+    })
 
 
 
 
 }
 // footer fetch
-fetch("../../include/footer.html")
+fetch(getIncludePath('footer.html'))
     .then(response => response.text())
     .then(data => {
         document.querySelector(".footer").innerHTML = data;
@@ -127,7 +163,14 @@ fetch("../../include/footer.html")
     });
 // 푸터 관련
 function initFooter() {
-
+    var ele = $(".sub_footer img")
+    var link = $(".sub_footer a")
+    ele.each((i, v) => {
+        $(v).attr("src", $(v).attr("src").replace("././", "../../"));
+    })
+    link.each((i, v) => {
+        $(v).attr("href", $(v).attr("href").replace("././", "../../"));
+    })
 }
 $(document).ready(function () {
     simpleBar();
@@ -167,7 +210,7 @@ function simpleBar() {
 }
 
 function sideMenu() {
-    
+
     $('.sitemap').click(function () {
         $(this).addClass('is-click');
         if ($(this).hasClass('is-click')) {
@@ -399,45 +442,63 @@ function accordion() {
 }
 
 function customSelect() {
-    const customSelects = document.querySelectorAll('.custom-select');
+    function initCustomSelect(selector) {
+        const selects = document.querySelectorAll(selector);
 
-    customSelects.forEach(select => {
-        const selected = select.querySelector('.select-selected');
-        const itemsWrapper = select.querySelector('.select-items-wrapper');
-        const items = select.querySelector('.select-items');
-
-        // 선택 영역 클릭 시 열기/닫기
-        selected.addEventListener('click', e => {
-            e.stopPropagation(); // 이벤트 버블링 방지
-            closeAllSelect(select);
-            items.classList.toggle('select-hide');
-            selected.classList.toggle('active');
+        // 페이지 로드 시 숨기기
+        selects.forEach(select => {
+            const items = select.querySelector('.select-items');
+            if (items) items.classList.add('select-hide');
         });
 
-        // 옵션 클릭
-        items.querySelectorAll('div').forEach(option => {
-            option.addEventListener('click', () => {
-                selected.textContent = option.textContent;
-                selected.dataset.value = option.dataset.value; // 값 저장
-                items.classList.add('select-hide');
-                selected.classList.remove('active');
+        selects.forEach(select => {
+            const selected = select.querySelector('.select-selected');
+            const items = select.querySelector('.select-items');
+
+            if (!selected || !items) return;
+
+            // 열기/닫기
+            selected.addEventListener('click', e => {
+                e.stopPropagation();
+                closeGroup(selects, select);
+                items.classList.toggle('select-hide');
+                selected.classList.toggle('active');
+            });
+
+            // 옵션 선택
+            items.querySelectorAll('div').forEach(option => {
+                option.addEventListener('click', () => {
+                    selected.textContent = option.textContent;
+                    selected.dataset.value = option.dataset.value;
+                    items.classList.add('select-hide');
+                    selected.classList.remove('active');
+                });
             });
         });
-    });
 
-    // 다른 셀렉트 닫기
-    function closeAllSelect(except = null) {
-        customSelects.forEach(select => {
-            if (select === except) return;
-            const sel = select.querySelector('.select-selected');
-            const items = select.querySelector('.select-items');
-            items.classList.add('select-hide');
-            sel.classList.remove('active');
-        });
+        // 그 그룹 안에서만 닫기
+        function closeGroup(group, except = null) {
+            group.forEach(select => {
+                if (select === except) return;
+                const sel = select.querySelector('.select-selected');
+                const items = select.querySelector('.select-items');
+                if (!sel || !items) return;
+                items.classList.add('select-hide');
+                sel.classList.remove('active');
+            });
+        }
+
+        // 바깥 클릭 시 그 그룹만 닫기
+        document.addEventListener('click', () => closeGroup(selects));
     }
 
-    // 페이지 클릭 시 모두 닫기
-    document.addEventListener('click', () => closeAllSelect());
+    // 그룹 A: bread 전용
+    initCustomSelect('.bread-sel.custom-select');
+
+    // 그룹 B: 그냥 custom-select (bread 제외)
+    initCustomSelect('.custom-select:not(.bread-sel)');
+
+
 
 
 }

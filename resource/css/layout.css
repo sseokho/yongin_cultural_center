@@ -103,7 +103,7 @@ textarea {
   border: 0;
   letter-spacing: -0.25px;
   color: #111;
-  font-family: "Pretendard", sans-serif;
+  font-family: "PretendardGOV", sans-serif;
   font-style: normal;
   vertical-align: baseline;
   -webkit-text-size-adjust: none;
@@ -134,7 +134,6 @@ select {
   -webkit-appearance: none;
   appearance: none;
   -moz-appearance: none;
-  background: url("/_res/kha_main/kha_home/img/common/search_select_arrow.png") no-repeat right 18px center;
   color: #888888;
 }
 
@@ -1216,6 +1215,9 @@ body .f_medium {
 }
 
 @media (min-width: 1025px) {
+  .mo {
+    display: none !important;
+  }
   .btn:disabled:hover {
     cursor: auto;
     background-color: initial;
@@ -1304,6 +1306,9 @@ body .f_medium {
   }
 }
 @media (min-width: 320px) and (max-width: 1024px) {
+  .mo {
+    display: block;
+  }
   .btn-datePicker {
     width: 4rem;
     height: 4rem;
@@ -1709,16 +1714,11 @@ body.overflow-hidden .header .header__inner {
   margin: 0 auto;
   position: relative;
 }
+.sub-content__inner {
+  width: 144rem;
+  max-width: 100%;
+  margin: 7.2rem auto 8rem;
+}
 .sub:after {
   display: none !important;
-}
-
-.board-write {
-  margin-top: 2.4rem;
-  padding-top: 2.8rem;
-  padding-bottom: 4rem;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-  border-top: 2px solid #111111;
-  border-bottom: 1px solid #A3A3A5;
 }

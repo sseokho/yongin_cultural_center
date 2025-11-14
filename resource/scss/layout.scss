@@ -116,17 +116,13 @@ body {
         position: relative;
     }
 
+    &-content__inner {
+        width: 144rem;
+        max-width: 100%;
+        margin: 7.2rem auto 8rem;
+    }
+
     &:after {
         display: none !important;
     }
 }
-
-.board-write {
-    margin-top: 2.4rem;
-    padding-top: 2.8rem;
-    padding-bottom: 4rem;
-    box-sizing: border-box;
-    border-top: 2px solid #111111;
-    border-bottom: 1px solid #A3A3A5;
-}
-
